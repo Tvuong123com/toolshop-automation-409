@@ -24,7 +24,10 @@ class HomePage(BasePage):
         self.sort_select = page.get_by_test_id("sort")
         self.sorting_completed = page.get_by_test_id("sorting_completed")
         self.product_prices = page.get_by_test_id("product-price")
-        # TODO B2/B4 (later): price_slider_max = page.get_by_role("slider").nth(1)
+        # Sprint 2: filters, slider, and footer external link
+        self.filter_completed = page.get_by_test_id("filter_completed")
+        self.price_slider_max = page.get_by_role("slider").nth(1)
+        self.footer_github = page.get_by_test_id("footer-learn-github")
 
     def open(self):
         """Return only after the first product list has arrived.
@@ -45,6 +48,36 @@ class HomePage(BasePage):
         """value: name,asc | name,desc | price,asc | price,desc"""
         self.sort_select.select_option(value)
         return self
+
+    def filter_by_category(self, label: str):
+        self.page.get_by_label(label).check()
+        return self
+
+    def lower_max_price_to(self, target: int):
+        self.price_slider_max.focus()
+        current = int(self.price_slider_max.get_attribute("aria-valuenow") or "100")
+        delta = max(0, current - target)
+        if delta > 0:
+            with self.page.expect_response(
+                lambda r: PRODUCT_LIST.search(r.url) is not None
+                and f"price,1,{target}" in (r.url + (r.request.post_data or ""))
+            ):
+                for _ in range(delta // 20):
+                    self.page.keyboard.press("PageDown")
+                for _ in range(delta % 20):
+                    self.page.keyboard.press("ArrowLeft")
+        return self
+
+    def open_github_in_new_tab(self):
+        with self.page.context.expect_page() as info:
+            self.footer_github.click()
+        new_page = info.value
+        new_page.wait_for_load_state("domcontentloaded")
+        return new_page
+
+    def prices_above_twenty(self):
+        pattern = re.compile(r"^\$(?:2[1-9]|[3-9]\d|\d{3,})\.|^\$20\.(?!00$)")
+        return self.product_prices.filter(has_text=pattern)
 
     def product_card(self, name: str):
         # Exact name match: "Pliers" must not match "Combination Pliers".
