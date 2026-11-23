@@ -11,7 +11,7 @@ def test_cart_line_price_equals_unit_price_times_quantity(page):
     """Goal: verify cart calculations compute correct line total and cart total.
     Precondition: cart is empty on start.
     Expected: line total equals unit price multiplied by 2, and grand total matches."""
-    product = HomePage(page).open().open_product("Combination Pliers")
+    product = HomePage(page).open().open_product("Claw Hammer")
     unit = product.price()
     product.add_to_cart(quantity=2)
     expect(product.cart_quantity).to_have_text("2")

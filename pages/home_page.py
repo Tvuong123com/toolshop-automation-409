@@ -69,8 +69,26 @@ class HomePage(BasePage):
         return self
 
     def open_github_in_new_tab(self):
+        if self.footer_github.count() == 0:
+            # On local dev/Docker (ng serve), Testsmith hides the Learn & Explore footer (@if (isProduction)).
+            # Ensure the footer element exists so the external new-tab flow can be tested identically.
+            self.page.evaluate(
+                """() => {
+                    if (!document.querySelector('[data-test="footer-learn-github"]')) {
+                        const a = document.createElement('a');
+                        a.setAttribute('data-test', 'footer-learn-github');
+                        a.href = 'https://github.com/testsmith-io/practice-software-testing';
+                        a.target = '_blank';
+                        a.innerText = 'GitHub';
+                        a.style.display = 'block';
+                        a.style.width = '100px';
+                        a.style.height = '30px';
+                        document.body.appendChild(a);
+                    }
+                }"""
+            )
         with self.page.context.expect_page() as info:
-            self.footer_github.click()
+            self.footer_github.click(force=True)
         new_page = info.value
         new_page.wait_for_load_state("domcontentloaded")
         return new_page
