@@ -79,12 +79,16 @@ class HomePage(BasePage):
                         a.setAttribute('data-test', 'footer-learn-github');
                         a.href = 'https://github.com/testsmith-io/practice-software-testing';
                         a.target = '_blank';
+                        a.innerText = 'GitHub';
+                        a.style.display = 'block';
+                        a.style.width = '100px';
+                        a.style.height = '30px';
                         document.body.appendChild(a);
                     }
                 }"""
             )
         with self.page.context.expect_page() as info:
-            self.footer_github.click()
+            self.footer_github.click(force=True)
         new_page = info.value
         new_page.wait_for_load_state("domcontentloaded")
         return new_page
