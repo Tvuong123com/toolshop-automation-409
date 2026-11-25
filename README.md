@@ -11,7 +11,7 @@ Bộ kiểm thử tự động (End-to-End UI, REST API, Network Route/Mocking, 
 | Thành viên (GitHub) | Vai trò / Hạng mục phụ trách | Pull Request |
 |---|---|---|
 | **Tvuong123com** (Vương) | Khởi tạo repo, bảo vệ nhánh `main`, dựng khung kiểm thử (`conftest.py`, `pytest.ini`, `pages/`), viết 4 test Smoke (`tests/ui/test_smoke.py`), review PR #2 | PR #1 (`feature/vuong-sprint1`) |
-| **Nhanoccho** (Nhân) | Bộ test API (`tests/api/`), test chặn/giả lập mạng (`tests/ui/test_network.py`), data-driven JSON (`data/search_keywords.json`), 12+ test UI phủ 6 nhóm chức năng & 3 tình huống đặc biệt (thanh trượt, tải tệp, tab mới) | PR #2 (`feature/nhan-sprint2`) |
+| **NhanNguyen1612** (Nhân) | Bộ test API (`tests/api/`), test chặn/giả lập mạng (`tests/ui/test_network.py`), data-driven JSON (`data/search_keywords.json`), 12+ test UI phủ 6 nhóm chức năng & 3 tình huống đặc biệt (thanh trượt, tải tệp, tab mới) | PR #2 (`feature/nhan-sprint2`) |
 | **phudang0611-beep** (Đăng) | Bộ test BDD (`tests/bdd/`), cấu hình CI/CD 3 trình duyệt (`chromium`, `firefox`, `webkit`) kèm Docker Toolshop (`toolshop/`, `.github/workflows/ci.yml`), chụp bằng chứng CI & Trace Viewer, cấu hình job Regression BUGGY, tổng hợp `docs/BUG_REPORT.md` & hoàn thiện `README.md` | PR #3 (`feature/dang-sprint2b`), PR #4 (`sprint-3`) |
 
 ---
