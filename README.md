@@ -10,9 +10,9 @@ Bộ kiểm thử tự động (End-to-End UI, REST API, Network Route/Mocking, 
 
 | Thành viên (GitHub) | Vai trò / Hạng mục phụ trách | Pull Request |
 |---|---|---|
-| **Tvuong123com** (Vương) | Khởi tạo repo, bảo vệ nhánh `main`, dựng khung kiểm thử (`conftest.py`, `pytest.ini`, `pages/`), viết 4 test Smoke (`tests/ui/test_smoke.py`), review PR #2 | PR #1 (`feature/vuong-sprint1`) |
-| **NhanNguyen1612** (Nhân) | Bộ test API (`tests/api/`), test chặn/giả lập mạng (`tests/ui/test_network.py`), data-driven JSON (`data/search_keywords.json`), 12+ test UI phủ 6 nhóm chức năng & 3 tình huống đặc biệt (thanh trượt, tải tệp, tab mới) | PR #2 (`feature/nhan-sprint2`) |
-| **phudang0611-beep** (Đăng) | Bộ test BDD (`tests/bdd/`), cấu hình CI/CD 3 trình duyệt (`chromium`, `firefox`, `webkit`) kèm Docker Toolshop (`toolshop/`, `.github/workflows/ci.yml`), chụp bằng chứng CI & Trace Viewer, cấu hình job Regression BUGGY, tổng hợp `docs/BUG_REPORT.md` & hoàn thiện `README.md` | PR #3 (`feature/dang-sprint2b`), PR #4 (`sprint-3`) |
+| **Tvuong123com** (Vương) | Khởi tạo repo, bảo vệ nhánh `main`, dựng khung kiểm thử (`conftest.py`, `pytest.ini`, `pages/`), viết 4 test Smoke (`tests/ui/test_smoke.py`), review & merge PR #2, PR #4, PR #6 | PR #1 (`feature/vuong-sprint1`) |
+| **NhanNguyen1612** (Nhân) | Bộ test API (`tests/api/`), test chặn/giả lập mạng (`tests/ui/test_network.py`), data-driven JSON (`data/search_keywords.json`), test UI phủ 6 nhóm chức năng & 3 tình huống đặc biệt (thanh trượt, tải tệp, tab mới), cấu hình job Regression BUGGY, lập `docs/BUG_REPORT.md` kèm ảnh bằng chứng, quy trình soát code AI (`5909afb` → `54059aa`) & hoàn thiện `README.md` | PR #2 (`feature/nhan-sprint2`), PR #4 & PR #6 (`sprint-3`) |
+| **phudang0611-beep** (Đăng) | Bộ test BDD (`tests/bdd/`), cấu hình CI/CD 3 trình duyệt (`chromium`, `firefox`, `webkit`) kèm Docker Toolshop (`toolshop/`, `.github/workflows/ci.yml`), chụp bằng chứng CI xanh & Trace Viewer | PR #3 (`feature/dang-sprint2b`) |
 
 ---
 
@@ -70,7 +70,7 @@ cp .env.example .env
 ### 3.2. Các lệnh chạy kiểm thử trên PROD
 
 ```bash
-pytest                          # Chạy toàn bộ bộ test (30 test cases)
+pytest                          # Chạy toàn bộ bộ test (31 test cases)
 pytest -m smoke                 # Chỉ chạy 4 test smoke nhanh
 pytest -m api -v                # Chỉ chạy 10 test API
 pytest -m ui -v                 # Chỉ chạy các test giao diện
