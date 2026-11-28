@@ -58,3 +58,47 @@ jobs:
             report.html
             test-results/
           retention-days: 7
+
+  test-buggy:
+    name: regression (BUGGY)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      SPRINT: sprint5-with-bugs
+      ROUTE_PREFIX: /#
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start Toolshop BUGGY containers
+        run: docker compose -f toolshop/docker-compose.yml up -d
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install browser
+        run: playwright install --with-deps chromium
+
+      - name: Wait for Toolshop BUGGY and load seed data
+        run: bash toolshop/start.sh
+
+      - name: Run full test suite against BUGGY
+        run: >
+          pytest --browser chromium
+          -n 2 --reruns 1
+          --tracing retain-on-failure --screenshot only-on-failure
+          --html=report-buggy.html --self-contained-html
+
+      - name: Upload BUGGY report and traces
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-buggy
+          path: |
+            report-buggy.html
+            test-results/
+          retention-days: 7
