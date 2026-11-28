@@ -1,4 +1,6 @@
 """Sprint 2 - Contact form attachment tests."""
+import time
+
 import pytest
 from playwright.sync_api import expect
 
@@ -21,3 +23,18 @@ def test_contact_empty_attachment_submits_successfully(page, tmp_path):
         .submit()
     )
     expect(contact.success).to_contain_text("Thanks for your message!")
+
+
+def test_contact_non_empty_attachment_shows_error(page, tmp_path):
+    attachment = tmp_path / "non_empty.txt"
+    attachment.write_text("hello toolshop", encoding="utf-8")
+    page.goto("/contact")
+    page.locator("#first_name").fill("QA")
+    page.locator("#last_name").fill("Bot")
+    page.locator("#email").fill("qa-bot@example.com")
+    page.locator("#subject").select_option("webmaster")
+    page.locator("#message").fill("A" * 60)
+    page.locator("#attachment").set_input_files(str(attachment))
+    page.locator(".btnSubmit").click()
+    time.sleep(1)
+    assert page.locator(".alert-danger").is_visible()
