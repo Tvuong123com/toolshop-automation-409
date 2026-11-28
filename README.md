@@ -102,7 +102,7 @@ pytest -n 2 -v --tracing retain-on-failure --screenshot only-on-failure
 
 ---
 
-## 4. Bảng Test Case (30 Test Cases)
+## 4. Bảng Test Case (31 Test Cases)
 
 ### 4.1. Test Giao diện (UI) & Route / Mocking
 
@@ -124,8 +124,9 @@ pytest -n 2 -v --tracing retain-on-failure --screenshot only-on-failure
 | TC-UI-14 | Xác thực | Kiểm tra lỗi bắt buộc khi form đăng nhập trống | Mở `/auth/login` → bấm Login khi chưa nhập dữ liệu | *(trống)* | Hiện `"Email is required"` và `"Password is required"` |
 | TC-UI-15 | Tài khoản (`storage_state`) | Truy cập trang tài khoản bằng phiên đã đăng nhập | Dùng fixture `logged_in_page` → mở `/account` | Tài khoản `test_user` (session) | Tiêu đề là `"My account"`, menu hiển thị `"QA Bot"` |
 | TC-UI-16 | Liên hệ (Tải tệp lên) | Gửi form liên hệ kèm tệp rỗng 0-byte | Mở `/contact` → điền đủ thông tin → đính kèm tệp `note.txt` (0 byte) → bấm Send | `note.txt` (0 byte), `webmaster` | Hiện thông báo thành công `"Thanks for your message!"` |
-| TC-UI-17 | Route / Mocking | Chặn tải ảnh nhưng danh mục vẫn hoạt động | Đăng ký `page.route` abort ảnh (`.png/.jpg/.webp/...`) → mở trang chủ | Regex đuôi ảnh | Danh sách tên sản phẩm vẫn hiển thị và có ít nhất 1 request ảnh bị chặn |
-| TC-UI-18 | Route / Mocking | Giả lập API `/products` trả về danh sách rỗng | Đăng ký `page.route` trả `EMPTY_PAGE` (HTTP 200) → mở trang chủ | `data: [], total: 0` | Hiện `"There are no products found."` và 0 thẻ sản phẩm |
+| TC-UI-17 | Liên hệ (Tải tệp lên) | Gửi form liên hệ kèm tệp có nội dung (không rỗng) | Mở `/contact` → điền đủ thông tin → đính kèm `non_empty.txt` → bấm Send | `non_empty.txt` (`"hello toolshop"`) | Hiện lỗi validation `"File should be empty."` tại `attachment-error` |
+| TC-UI-18 | Route / Mocking | Chặn tải ảnh nhưng danh mục vẫn hoạt động | Đăng ký `page.route` abort ảnh (`.png/.jpg/.webp/...`) → mở trang chủ | Regex đuôi ảnh | Danh sách tên sản phẩm vẫn hiển thị và có ít nhất 1 request ảnh bị chặn |
+| TC-UI-19 | Route / Mocking | Giả lập API `/products` trả về danh sách rỗng | Đăng ký `page.route` trả `EMPTY_PAGE` (HTTP 200) → mở trang chủ | `data: [], total: 0` | Hiện `"There are no products found."` và 0 thẻ sản phẩm |
 
 ### 4.2. Test REST API (`APIRequestContext`)
 
@@ -187,12 +188,22 @@ Job `regression (BUGGY)` trong `.github/workflows/ci.yml` chạy nguyên bộ te
 
 ---
 
-## 7. Phần có AI hỗ trợ
+## 7. Sử dụng AI
 
-Nhóm có sử dụng trợ lý AI trong quá trình hoàn thiện Sprint 3 ở các hạng mục sau (mọi dòng code và tài liệu đều đã được nhóm tự kiểm tra, chạy kiểm chứng thực tế trên cả PROD và BUGGY và hiểu rõ để giải thích khi vấn đáp):
+Nhóm thực hiện đúng quy trình sử dụng AI của môn học: **commit bản AI sinh ra nguyên vẹn trước** (commit `5909afb`), sau đó **soát lỗi, sửa lại theo chuẩn đồ án và commit lần hai**. Mọi dòng code và tài liệu có AI hỗ trợ đều đã được nhóm tự kiểm tra, chạy kiểm chứng thực tế trên cả PROD và BUGGY và hiểu rõ để giải thích khi vấn đáp.
 
-| Hạng mục có AI hỗ trợ | Nội dung AI hỗ trợ | Nhóm rà soát & kiểm chứng |
+### 7.1. Soát & sửa code test do AI sinh ra (`test_contact_non_empty_attachment_shows_error`)
+
+| AI viết gì (commit `5909afb`) | Sai ở đâu | Nhóm sửa thế nào và vì sao |
 |---|---|---|
-| Cấu hình job `test-buggy` trong `.github/workflows/ci.yml` | Đề xuất cấu hình job chạy Docker BUGGY (`SPRINT: sprint5-with-bugs`, `ROUTE_PREFIX: /#`, `continue-on-error: true`, artifact `report-buggy`) | Đối chiếu từng yêu cầu Mục 3.12, đảm bảo không sửa test/assertion và không dùng URL công khai trên CI |
-| Phân loại kết quả chạy BUGGY & biên soạn `docs/BUG_REPORT.md` | Tổng hợp log lỗi từ lần chạy `pytest` thực tế trên `with-bugs.practicesoftwaretesting.com`, tách lỗi thật và khác biệt môi trường | Tự chạy trực tiếp trên cả PROD (30/30 passed) và BUGGY, kiểm tra lại từng ảnh chụp bằng chứng `BUG-002.png` → `BUG-008.png`, gộp các test trùng nguyên nhân gốc |
-| Hoàn thiện tài liệu `README.md` | Chuẩn hóa bảng Test Case (30 TCs) và hướng dẫn chạy theo mẫu Mục 4 đề bài | Kiểm đối chiếu từng ID/tên hàm với mã nguồn thực tế trong `tests/` và `pages/` |
+| Viết thẳng `page.goto("/contact")` và `page.locator("#first_name")`, `page.locator(".btnSubmit")` trong file test | Vi phạm Page Object Model (đặt locator trong `tests/`), dùng CSS id/class dễ vỡ, và `page.goto("/contact")` sẽ lỗi trên BUGGY vì thiếu `ROUTE_PREFIX=/#` | Chuyển toàn bộ thao tác sang gọi `ContactPage(page).open().fill_form(...).attach(...).submit()` và thêm `self.attachment_error = page.get_by_test_id("attachment-error")` trong `pages/contact_page.py` |
+| Dùng `time.sleep(1)` để chờ thông báo lỗi | Vi phạm luật cấm `sleep`, gây test chậm và dễ flaky trên CI | Xóa bỏ hoàn toàn `time.sleep(1)`, dùng cơ chế tự động chờ (`auto-wait`) của `expect(...)` |
+| Kiểm tra lỏng `assert page.locator(".alert-danger").is_visible()` | Assertion quá lỏng (chỉ kiểm tra "có hiện alert đỏ", không đọc nội dung lỗi nên dễ pass nhầm khi báo lỗi khác) và không có tự động chờ | Siết chặt thành `expect(contact.attachment_error).to_contain_text("File should be empty.")` |
+| Thiếu docstring mô tả test | Thiếu 3 ý bắt buộc (Goal, Precondition, Expected) | Bổ sung docstring 3 dòng đúng quy ước của đồ án |
+
+### 7.2. Các hạng mục tài liệu & CI có AI hỗ trợ
+
+| Hạng mục | AI hỗ trợ gì | Nhóm rà soát & kiểm chứng |
+|---|---|---|
+| Job `test-buggy` trong `.github/workflows/ci.yml` | Đề xuất cấu hình job chạy Docker BUGGY (`SPRINT: sprint5-with-bugs`, `ROUTE_PREFIX: /#`, `continue-on-error: true`, artifact `report-buggy`) | Đối chiếu Mục 3.12, xác nhận 3 job PROD xanh và job BUGGY đỏ đúng kỳ vọng trên GitHub Actions (PR #4) |
+| Biên soạn `docs/BUG_REPORT.md` & `README.md` | Tổng hợp log từ lần chạy thực tế trên BUGGY và chuẩn hóa bảng Test Case | Tự chạy kiểm chứng trên cả PROD & BUGGY, kiểm tra từng ảnh chụp `BUG-001.png` → `BUG-008.png`, gộp đúng các test trùng nguyên nhân gốc và tách 2 trường hợp khác môi trường |
